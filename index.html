@@ -53,7 +53,17 @@
   .chip.money { background: transparent; border: 1px solid var(--line); }
   .task.done .title { text-decoration: line-through; color: var(--muted); }
   .task.done { opacity: .7; }
-  .task .del { border: 0; background: none; color: var(--muted); cursor: pointer; font-size: 1.1rem; }
+  .task .ed { border: 1px solid var(--line); background: none; color: var(--muted); cursor: pointer; font: inherit; font-size: .8rem;
+    border-radius: 999px; padding: 2px 10px; align-self: flex-start; flex: none; }
+  .form { display: grid; gap: 8px; flex: 1; min-width: 0; }
+  .form input, .form textarea { font: inherit; padding: 8px 10px; border-radius: 10px; border: 1px solid var(--line); background: var(--bg); color: var(--text); width: 100%; }
+  .form textarea { min-height: 70px; resize: vertical; }
+  .form .row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+  .form .btns { display: flex; flex-wrap: wrap; gap: 8px; }
+  .form button { font: inherit; border: 1px solid var(--line); background: var(--card); color: var(--text); border-radius: 999px; padding: 6px 14px; cursor: pointer; }
+  .form button.ok { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+  .form button.rm { color: var(--warn); margin-left: auto; }
+  @media (max-width: 520px) { .form .row { grid-template-columns: 1fr; } }
   details { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; margin-top: 10px; }
   summary { cursor: pointer; font-weight: 600; }
   table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: .9rem; }
@@ -107,6 +117,7 @@
         <input id="n-date" type="date">
         <input id="n-cat" placeholder="Categoría (opcional)">
       </div>
+      <input id="n-money" placeholder="Monto (opcional)">
       <div><button id="n-add">Agregar</button></div>
     </div>
   </details>
@@ -126,9 +137,10 @@
     <div class="tools">
       <button id="exp">Copiar mi avance</button>
       <button id="imp">Pegar un avance</button>
+      <button id="rest">Restaurar tareas eliminadas</button>
     </div>
     <div class="detail" style="color:var(--muted);font-size:.88rem;margin-top:8px">
-      Las marcas se guardan solo en este dispositivo. Para pasarlas del computador al celular, o a Javi, copia el avance aquí y pégalo en el otro dispositivo.
+      Las marcas y los cambios se guardan solo en este dispositivo. Para pasarlos del computador al celular, o a Javi, copia el avance aquí y pégalo en el otro dispositivo.
     </div>
   </details>
 
@@ -209,11 +221,12 @@ var PROV = [
 // ====== FIN DE DATOS ======
 
 var KEY = 'matri-javi-mati-v1';
-var estado = { hechas: {}, extra: [], borradas: {} };
+var estado = { hechas: {}, extra: [], borradas: {}, cambios: {} };
 try { var g = JSON.parse(localStorage.getItem(KEY)); if (g) estado = Object.assign(estado, g); } catch (e) {}
 function guardar() { try { localStorage.setItem(KEY, JSON.stringify(estado)); } catch (e) {} }
 
 var filtro = 'pend';
+var editando = null;
 var MESES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
 var DIAS = ['dom','lun','mar','mié','jue','vie','sáb'];
 
@@ -221,8 +234,10 @@ function fecha(s) { var p = s.split('-'); return new Date(+p[0], +p[1] - 1, +p[2
 function hoy() { var n = new Date(); return new Date(n.getFullYear(), n.getMonth(), n.getDate()); }
 function diasHasta(s) { return Math.round((fecha(s) - hoy()) / 86400000); }
 function esc(s) { var d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
+function attr(s) { return esc(s).replace(/"/g, '&quot;'); }
 function todas() {
   return TAREAS.concat(estado.extra).filter(function (t) { return !estado.borradas[t.id]; })
+    .map(function (t) { return estado.cambios[t.id] ? Object.assign({}, t, estado.cambios[t.id]) : t; })
     .sort(function (a, b) { return (a.f || '9999') < (b.f || '9999') ? -1 : (a.f || '9999') > (b.f || '9999') ? 1 : 0; });
 }
 
@@ -250,6 +265,18 @@ function pintar() {
     var g = t.f ? MESES[fecha(t.f).getMonth()] + ' ' + fecha(t.f).getFullYear() : 'Sin fecha definida';
     if (g !== grupo) { html += '<h2>' + g + '</h2>'; grupo = g; }
     var hecho = !!estado.hechas[t.id], chip = '';
+    if (editando === t.id) {
+      html += '<div class="task"><div class="form" data-form="' + t.id + '">' +
+        '<input name="t" value="' + attr(t.t) + '" placeholder="Qué hay que hacer">' +
+        '<textarea name="d" placeholder="Detalle">' + esc(t.d) + '</textarea>' +
+        '<div class="row"><input name="f" type="date" value="' + attr(t.f) + '">' +
+        '<input name="c" value="' + attr(t.c) + '" placeholder="Categoría">' +
+        '<input name="m" value="' + attr(t.m) + '" placeholder="Monto"></div>' +
+        '<div class="btns"><button class="ok" data-save="' + t.id + '">Guardar</button>' +
+        '<button data-cancel="1">Cancelar</button>' +
+        '<button class="rm" data-del="' + t.id + '">Eliminar</button></div></div></div>';
+      return;
+    }
     if (t.f) {
       var n = diasHasta(t.f), cls = 'date';
       if (!hecho && n < 0) cls = 'late'; else if (!hecho && n <= 7) cls = 'soon';
@@ -261,7 +288,7 @@ function pintar() {
       (t.d ? '<div class="detail">' + esc(t.d) + '</div>' : '') +
       '<div class="meta">' + chip + (t.c ? '<span class="chip">' + esc(t.c) + '</span>' : '') +
       (t.m ? '<span class="chip money">' + esc(t.m) + '</span>' : '') + '</div></div>' +
-      (t.propia ? '<button class="del" data-del="' + t.id + '" title="Eliminar">×</button>' : '') + '</div>';
+      '<button class="ed" data-edit="' + t.id + '">Editar</button></div>';
   });
   document.getElementById('list').innerHTML = html || '<div class="empty">No hay tareas en esta vista.</div>';
 }
@@ -291,10 +318,26 @@ document.getElementById('list').addEventListener('change', function (e) {
   guardar(); pintar();
 });
 document.getElementById('list').addEventListener('click', function (e) {
-  var id = e.target.getAttribute('data-del'); if (!id) return;
-  estado.extra = estado.extra.filter(function (t) { return t.id !== id; });
-  delete estado.hechas[id]; guardar(); pintar();
+  var el = e.target, id;
+  if ((id = el.getAttribute('data-edit'))) { editando = id; pintar(); return; }
+  if (el.getAttribute('data-cancel')) { editando = null; pintar(); return; }
+  if ((id = el.getAttribute('data-save'))) {
+    var f = el.closest('.form'), v = function (n) { return f.querySelector('[name=' + n + ']').value.trim(); };
+    if (!v('t')) return;
+    var nuevo = { t: v('t'), d: v('d'), f: v('f'), c: v('c'), m: v('m') };
+    var propia = estado.extra.filter(function (t) { return t.id === id; })[0];
+    if (propia) Object.assign(propia, nuevo); else estado.cambios[id] = nuevo;
+    editando = null; guardar(); pintar(); return;
+  }
+  if ((id = el.getAttribute('data-del'))) {
+    var antes = estado.extra.length;
+    estado.extra = estado.extra.filter(function (t) { return t.id !== id; });
+    if (estado.extra.length === antes) estado.borradas[id] = true;
+    delete estado.hechas[id]; delete estado.cambios[id];
+    editando = null; guardar(); pintar();
+  }
 });
+document.getElementById('rest').addEventListener('click', function () { estado.borradas = {}; guardar(); pintar(); });
 document.getElementById('filters').addEventListener('click', function (e) {
   var f = e.target.getAttribute('data-f'); if (!f) return;
   filtro = f;
@@ -304,8 +347,9 @@ document.getElementById('filters').addEventListener('click', function (e) {
 document.getElementById('n-add').addEventListener('click', function () {
   var t = document.getElementById('n-title').value.trim(); if (!t) return;
   estado.extra.push({ id: 'x' + Date.now(), t: t, d: document.getElementById('n-detail').value.trim(),
-    f: document.getElementById('n-date').value, c: document.getElementById('n-cat').value.trim(), propia: true });
-  ['n-title', 'n-detail', 'n-date', 'n-cat'].forEach(function (i) { document.getElementById(i).value = ''; });
+    f: document.getElementById('n-date').value, c: document.getElementById('n-cat').value.trim(),
+    m: document.getElementById('n-money').value.trim(), propia: true });
+  ['n-title', 'n-detail', 'n-date', 'n-cat', 'n-money'].forEach(function (i) { document.getElementById(i).value = ''; });
   guardar(); pintar();
 });
 document.getElementById('exp').addEventListener('click', function () {
@@ -316,7 +360,7 @@ document.getElementById('exp').addEventListener('click', function () {
 document.getElementById('imp').addEventListener('click', function () {
   var txt = prompt('Pega aquí el avance copiado:'); if (!txt) return;
   try { var o = JSON.parse(txt); if (!o || typeof o.hechas !== 'object') throw 0;
-    estado = { hechas: o.hechas || {}, extra: o.extra || [], borradas: o.borradas || {} }; guardar(); pintar();
+    estado = { hechas: o.hechas || {}, extra: o.extra || [], borradas: o.borradas || {}, cambios: o.cambios || {} }; guardar(); pintar();
   } catch (e) { alert('Ese texto no es un avance válido.'); }
 });
 
