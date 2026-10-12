@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Matrimonio Javi y Mati</title>
+<style>
+  :root {
+    --bg: #f7f4ef; --card: #ffffff; --text: #2b2a28; --muted: #77726a;
+    --line: #e4ded4; --accent: #5b7553; --accent-soft: #e6eee2;
+    --warn: #b4472f; --warn-soft: #fbe9e4; --soon: #a9741a; --soon-soft: #fbf1dc;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1b1c1a; --card: #262725; --text: #ecebe6; --muted: #a09c93;
+      --line: #3a3b37; --accent: #9dbb92; --accent-soft: #2f3a2c;
+      --warn: #f0917b; --warn-soft: #43261f; --soon: #e5b866; --soon-soft: #3d3220;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; line-height: 1.45; }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 20px 16px 60px; }
+  header { text-align: center; padding: 18px 0 6px; }
+  h1 { font-family: Georgia, "Times New Roman", serif; font-weight: normal; font-size: 2rem; margin: 0; }
+  .sub { color: var(--muted); margin-top: 4px; font-size: .95rem; }
+  .countdown { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 20px 0 14px; }
+  .countdown div { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 12px 4px; text-align: center; }
+  .countdown b { display: block; font-size: 1.9rem; font-variant-numeric: tabular-nums; color: var(--accent); }
+  .countdown span { font-size: .75rem; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+  .progress { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
+  .bar { height: 10px; background: var(--line); border-radius: 6px; overflow: hidden; margin-top: 8px; }
+  .bar i { display: block; height: 100%; width: 0; background: var(--accent); transition: width .3s; }
+  .progress small { color: var(--muted); }
+  .next { margin-top: 12px; background: var(--accent-soft); border-radius: 12px; padding: 12px 14px; }
+  .next small { color: var(--muted); text-transform: uppercase; letter-spacing: .06em; font-size: .72rem; }
+  .filters { display: flex; flex-wrap: wrap; gap: 8px; margin: 22px 0 6px; }
+  .filters button, .add button, .tools button { font: inherit; border: 1px solid var(--line); background: var(--card); color: var(--text);
+    border-radius: 999px; padding: 6px 14px; cursor: pointer; }
+  .filters button.on { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+  h2 { font-size: 1rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 26px 0 8px; }
+  .task { display: flex; gap: 12px; background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; margin-bottom: 8px; }
+  .task input[type=checkbox] { width: 22px; height: 22px; margin-top: 2px; accent-color: var(--accent); flex: none; cursor: pointer; }
+  .task .body { flex: 1; min-width: 0; }
+  .task .title { font-weight: 600; }
+  .task .detail { color: var(--muted); font-size: .92rem; margin-top: 2px; }
+  .task .meta { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; font-size: .78rem; }
+  .chip { border-radius: 999px; padding: 2px 10px; background: var(--accent-soft); color: var(--text); }
+  .chip.date { background: transparent; border: 1px solid var(--line); color: var(--muted); }
+  .chip.late { background: var(--warn-soft); color: var(--warn); }
+  .chip.soon { background: var(--soon-soft); color: var(--soon); }
+  .chip.money { background: transparent; border: 1px solid var(--line); }
+  .task.done .title { text-decoration: line-through; color: var(--muted); }
+  .task.done { opacity: .7; }
+  .task .del { border: 0; background: none; color: var(--muted); cursor: pointer; font-size: 1.1rem; }
+  details { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; margin-top: 10px; }
+  summary { cursor: pointer; font-weight: 600; }
+  table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: .9rem; }
+  td { border-top: 1px solid var(--line); padding: 7px 4px; vertical-align: top; }
+  td:first-child { white-space: nowrap; color: var(--accent); font-weight: 600; padding-right: 12px; }
+  .add { display: grid; grid-template-columns: 1fr; gap: 8px; margin-top: 10px; }
+  .add input { font: inherit; padding: 9px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--bg); color: var(--text); width: 100%; }
+  .add .row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .tools { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+  .note { color: var(--muted); font-size: .82rem; margin-top: 24px; text-align: center; }
+  .empty { color: var(--muted); padding: 18px 0; text-align: center; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Javi &amp; Mati</h1>
+    <div class="sub">Sábado 6 de marzo de 2027 · 17:00 · Calera de Tango</div>
+  </header>
+
+  <div class="countdown" id="countdown">
+    <div><b id="cd-d">0</b><span>días</span></div>
+    <div><b id="cd-h">0</b><span>horas</span></div>
+    <div><b id="cd-m">0</b><span>min</span></div>
+    <div><b id="cd-s">0</b><span>seg</span></div>
+  </div>
+
+  <div class="progress">
+    <strong id="prog-text">0 de 0 tareas listas</strong>
+    <div class="bar"><i id="prog-bar"></i></div>
+    <small id="prog-late"></small>
+  </div>
+
+  <div class="next" id="next"></div>
+
+  <div class="filters" id="filters">
+    <button data-f="pend" class="on">Pendientes</button>
+    <button data-f="todas">Todas</button>
+    <button data-f="hechas">Hechas</button>
+    <button data-f="pagos">Pagos</button>
+  </div>
+
+  <div id="list"></div>
+
+  <details>
+    <summary>Agregar una tarea</summary>
+    <div class="add">
+      <input id="n-title" placeholder="Qué hay que hacer">
+      <input id="n-detail" placeholder="Detalle (opcional)">
+      <div class="row">
+        <input id="n-date" type="date">
+        <input id="n-cat" placeholder="Categoría (opcional)">
+      </div>
+      <div><button id="n-add">Agregar</button></div>
+    </div>
+  </details>
+
+  <details>
+    <summary>Cronograma del día</summary>
+    <table id="day"></table>
+  </details>
+
+  <details>
+    <summary>Proveedores y responsables</summary>
+    <table id="prov"></table>
+  </details>
+
+  <details>
+    <summary>Respaldo</summary>
+    <div class="tools">
+      <button id="exp">Copiar mi avance</button>
+      <button id="imp">Pegar un avance</button>
+    </div>
+    <div class="detail" style="color:var(--muted);font-size:.88rem;margin-top:8px">
+      Las marcas se guardan solo en este dispositivo. Para pasarlas del computador al celular, o a Javi, copia el avance aquí y pégalo en el otro dispositivo.
+    </div>
+  </details>
+
+  <div class="note">Las fechas son metas propuestas: lo que importa es no pasarse de las que dicen "Pago" o "Plazo de contrato".</div>
+</div>
+
+<script>
+// ====== DATOS: edita aquí para cambiar tareas, fechas o detalles ======
+var BODA = new Date('2027-03-06T17:00:00-03:00');
+
+var TAREAS = [
+  // Octubre 2026
+  { id: 't01', f: '2026-10-13', c: 'Banquetería', t: 'Hablar con Sebastián', d: 'Confirmar valor por persona con base de 100. Barra libre: que sea ilimitada, hasta qué hora, marcas y valor por persona extra; intentar negociar. Sombra para la ceremonia de las 17:30. Horario de acceso para instalar lounge y arco.' },
+  { id: 't02', f: '2026-10-16', c: 'Pago', t: 'Firmar contrato de banquetería y anexo de barra libre', d: 'Completar los campos en amarillo del contrato. Pagar el saldo de la reserva.', m: '$138.000' },
+  { id: 't03', f: '2026-10-18', c: 'Ceremonia', t: 'Reservar la fecha con el pastor', d: 'Preguntar si pide reunión o charlas previas.', m: '$50.000' },
+  { id: 't04', f: '2026-10-23', c: 'Productora', t: 'Agendar visita técnica con la productora', d: 'Ver conexión eléctrica, ubicación de pista de baile y sonido de la ceremonia. Confirmar que las 8 horas cubren hasta las 24:00.' },
+  { id: 't05', f: '2026-10-25', c: 'Organización', t: 'Definir roles del día', d: 'Quién coordina, quién cierra (regalos, decoración, lounge), quién paga a la productora, quién cuida a Kai después de la ceremonia y quién saca fotos cuando entran las argollas.' },
+  { id: 't06', f: '2026-10-31', c: 'Invitados', t: 'Lista de invitados completa', d: 'Juntar la lista de Mati (74) y la de Javi (58) en una sola planilla, con teléfono de cada uno.' },
+  { id: 't07', f: '2026-10-31', c: 'Invitados', t: 'Invitación digital y formulario de confirmación', d: 'Invitación en Canva con enlace o QR a un formulario de Google que alimente la planilla.' },
+  // Noviembre 2026
+  { id: 't08', f: '2026-11-15', c: 'Invitados', t: 'Enviar las invitaciones', d: 'Pedir confirmación antes del 31 de enero.' },
+  { id: 't09', f: '2026-11-30', c: 'Logística', t: 'Decidir el transporte de invitados', d: 'Buses de acercamiento o que cada uno llegue por su cuenta. El evento termina a las 24:00 y hay barra libre.' },
+  { id: 't10', f: '2026-11-30', c: 'Asado', t: 'Cerrar el equipo de asado', d: 'Hora de llegada (una sola: 15:00 o 16:00), parrilla, tablas y servilletas, y quién reparte el asado en formato cóctel.', m: '$570.000' },
+  { id: 't11', f: '2026-11-30', c: 'Decoración', t: 'Cotizar y reservar los lounge por fuera', d: '4 sets. Definir quién los lleva, a qué hora se instalan y quién los retira esa noche.' },
+  { id: 't12', f: '2026-11-30', c: 'Compras', t: 'Cotillón y atril con QR', d: '', m: '$100.000' },
+  { id: 't13', f: '2026-11-30', c: 'Compras', t: 'Recuerdos', d: '', m: '$80.000' },
+  // Diciembre 2026
+  { id: 't14', f: '2026-12-12', c: 'Compras', t: 'Comprar las argollas', d: '', m: '$250.000' },
+  { id: 't15', f: '2026-12-19', c: 'Compras', t: 'Encargar la torta', d: 'El corte es entre 20:15 y 20:45.', m: '$150.000' },
+  { id: 't16', f: '2026-12-19', c: 'Decoración', t: 'Arco de ceremonia hecho por nosotros', d: 'Diseño, materiales y quién lo arma el día del evento.' },
+  { id: 't17', f: '2026-12-19', c: 'Vestuario', t: 'Traje del novio', d: 'Con presupuesto aparte.' },
+  { id: 't18', f: '2026-12-19', c: 'Bailes', t: 'Elegir las canciones', d: 'Entradas de la ceremonia, vals y baile sorpresa. Definir la coreografía.' },
+  // Enero 2027
+  { id: 't19', f: '2027-01-09', c: 'Bailes', t: 'Primer ensayo de los bailes', d: 'Después, un ensayo por semana.' },
+  { id: 't20', f: '2027-01-15', c: 'Fotografía', t: 'Lista de fotos imprescindibles', d: 'Acordarla con la hermana y su amiga. Baterías y tarjetas de respaldo. Fotos de pareja a las 19:30 con la mejor luz.' },
+  { id: 't21', f: '2027-01-15', c: 'Animación', t: 'Pauta con el animador', d: 'Tiempos, palabras de las familias, brindis y juegos.' },
+  { id: 't22', f: '2027-01-31', c: 'Invitados', t: 'Cierre de confirmaciones de asistencia', d: 'Llamar a quienes no hayan respondido.' },
+  // Febrero 2027
+  { id: 't23', f: '2027-02-06', c: 'Productora', t: 'Reunión de pauta con la productora', d: 'Plazo de contrato: 4 semanas antes. Entregar las pistas finales de los bailes y la música de la ceremonia.' },
+  { id: 't24', f: '2027-02-19', c: 'Pago', t: 'Segundo abono de banquetería (40 %)', d: 'Plazo de contrato.', m: '$1.352.000' },
+  { id: 't25', f: '2027-02-24', c: 'Banquetería', t: 'Número final de invitados y detalles cerrados', d: 'Plazo de contrato: 10 días antes. Después de esta fecha los cambios dependen de Sebastián.' },
+  { id: 't26', f: '2027-02-27', c: 'Bailes', t: 'Ensayo general con los amigos', d: 'Baile sorpresa completo.' },
+  // Marzo 2027
+  { id: 't27', f: '2027-03-03', c: 'Pago', t: 'Pago final de banquetería y barra libre', d: 'Plazo de contrato. Servicio base $1.690.000 más barra libre $500.000, más los invitados extra si los hay.', m: '$2.190.000' },
+  { id: 't28', f: '2027-03-05', c: 'Organización', t: 'Dejar todo listo el día anterior', d: 'Stand de frutas y snacks, arco, cotillón, recuerdos, argollas y arnés de Kai. Entregar al encargado el pago de la productora.' },
+  { id: 't29', f: '2027-03-06', c: 'Pago', t: 'Pago a la productora al llegar', d: 'Si no se paga, el servicio se suspende. Lo hace la persona encargada.', m: '$250.000' },
+  // Sin fecha definida
+  { id: 't30', f: '', c: 'Civil', t: 'Definir fecha del matrimonio civil y su cóctel', d: 'Incluye el vestido de Javi para el civil.', m: '$200.000' },
+  { id: 't31', f: '', c: 'Alojamiento', t: 'Confirmar monto y pago del Novotel Vitacura', d: 'Reservado por 2 noches; falta anotar el valor en el presupuesto.' },
+  { id: 't32', f: '', c: 'Presupuesto', t: 'Decidir cómo cubrir el déficit', d: 'Agregar al presupuesto transporte, hotel e imprevistos.' }
+];
+
+var DIA = [
+  ['15:00', 'Llegan productora, animador y equipo de asado. Montaje y pruebas de sonido.'],
+  ['16:45', 'Llegan los invitados. Bebida de bienvenida y stand de frutas y snacks.'],
+  ['17:30', 'Ceremonia (45 min): entradas, pastor, votos.'],
+  ['18:15', 'Fotos de los novios. Se abre el cóctel y entra la carne a la parrilla.'],
+  ['18:45', 'Sale el asado. Los novios recorren los grupos.'],
+  ['19:30', 'Margen. Fotos de pareja con la mejor luz.'],
+  ['19:45', 'Palabras de familiares y brindis.'],
+  ['20:15', 'Corte de torta y postres.'],
+  ['20:45', 'Vals: novios, papá con novia, mamá con novio.'],
+  ['21:15', 'Baile sorpresa. Se abre la barra libre.'],
+  ['21:45', 'Fiesta y juegos.'],
+  ['23:15', 'Despedida de los novios.'],
+  ['24:00', 'Término. Retiro de lounge, arco, regalos y decoración.']
+];
+
+var PROV = [
+  ['Lugar y banquetería', 'Sebastián · Parcela 18, Camino El Sauce'],
+  ['Audio, luces y DJ', 'Productora Merkén Sabor Criollo'],
+  ['Asado', 'Equipo conocido de la familia'],
+  ['Animación', 'Un conocido'],
+  ['Foto y video', 'La hermana y una amiga'],
+  ['Ceremonia', 'Pastor (por reservar)'],
+  ['Hotel', 'Novotel Vitacura, 2 noches']
+];
+// ====== FIN DE DATOS ======
+
+var KEY = 'matri-javi-mati-v1';
+var estado = { hechas: {}, extra: [], borradas: {} };
+try { var g = JSON.parse(localStorage.getItem(KEY)); if (g) estado = Object.assign(estado, g); } catch (e) {}
+function guardar() { try { localStorage.setItem(KEY, JSON.stringify(estado)); } catch (e) {} }
+
+var filtro = 'pend';
+var MESES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+var DIAS = ['dom','lun','mar','mié','jue','vie','sáb'];
+
+function fecha(s) { var p = s.split('-'); return new Date(+p[0], +p[1] - 1, +p[2]); }
+function hoy() { var n = new Date(); return new Date(n.getFullYear(), n.getMonth(), n.getDate()); }
+function diasHasta(s) { return Math.round((fecha(s) - hoy()) / 86400000); }
+function esc(s) { var d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
+function todas() {
+  return TAREAS.concat(estado.extra).filter(function (t) { return !estado.borradas[t.id]; })
+    .sort(function (a, b) { return (a.f || '9999') < (b.f || '9999') ? -1 : (a.f || '9999') > (b.f || '9999') ? 1 : 0; });
+}
+
+function pintar() {
+  var ts = todas();
+  var hechas = ts.filter(function (t) { return estado.hechas[t.id]; }).length;
+  var atras = ts.filter(function (t) { return !estado.hechas[t.id] && t.f && diasHasta(t.f) < 0; }).length;
+  document.getElementById('prog-text').textContent = hechas + ' de ' + ts.length + ' tareas listas';
+  document.getElementById('prog-bar').style.width = (ts.length ? Math.round(hechas * 100 / ts.length) : 0) + '%';
+  document.getElementById('prog-late').textContent = atras ? atras + (atras === 1 ? ' tarea atrasada' : ' tareas atrasadas') : 'Nada atrasado';
+
+  var sig = ts.filter(function (t) { return !estado.hechas[t.id] && t.f; })[0];
+  document.getElementById('next').innerHTML = sig
+    ? '<small>Lo que sigue</small><div><strong>' + esc(sig.t) + '</strong></div><div style="color:var(--muted);font-size:.9rem">' + textoFecha(sig.f) + '</div>'
+    : '<strong>No quedan tareas con fecha pendientes.</strong>';
+
+  var vis = ts.filter(function (t) {
+    if (filtro === 'pend') return !estado.hechas[t.id];
+    if (filtro === 'hechas') return estado.hechas[t.id];
+    if (filtro === 'pagos') return !!t.m;
+    return true;
+  });
+  var html = '', grupo = null;
+  vis.forEach(function (t) {
+    var g = t.f ? MESES[fecha(t.f).getMonth()] + ' ' + fecha(t.f).getFullYear() : 'Sin fecha definida';
+    if (g !== grupo) { html += '<h2>' + g + '</h2>'; grupo = g; }
+    var hecho = !!estado.hechas[t.id], chip = '';
+    if (t.f) {
+      var n = diasHasta(t.f), cls = 'date';
+      if (!hecho && n < 0) cls = 'late'; else if (!hecho && n <= 7) cls = 'soon';
+      chip = '<span class="chip ' + cls + '">' + textoFecha(t.f) + '</span>';
+    }
+    html += '<div class="task' + (hecho ? ' done' : '') + '">' +
+      '<input type="checkbox" data-id="' + t.id + '"' + (hecho ? ' checked' : '') + ' aria-label="Marcar como hecha">' +
+      '<div class="body"><div class="title">' + esc(t.t) + '</div>' +
+      (t.d ? '<div class="detail">' + esc(t.d) + '</div>' : '') +
+      '<div class="meta">' + chip + (t.c ? '<span class="chip">' + esc(t.c) + '</span>' : '') +
+      (t.m ? '<span class="chip money">' + esc(t.m) + '</span>' : '') + '</div></div>' +
+      (t.propia ? '<button class="del" data-del="' + t.id + '" title="Eliminar">×</button>' : '') + '</div>';
+  });
+  document.getElementById('list').innerHTML = html || '<div class="empty">No hay tareas en esta vista.</div>';
+}
+
+function textoFecha(s) {
+  var d = fecha(s), n = diasHasta(s);
+  var base = DIAS[d.getDay()] + ' ' + d.getDate() + ' ' + MESES[d.getMonth()].slice(0, 3);
+  if (n === 0) return base + ' · hoy';
+  if (n === 1) return base + ' · mañana';
+  if (n < 0) return base + ' · hace ' + (-n) + (n === -1 ? ' día' : ' días');
+  return base + ' · en ' + n + ' días';
+}
+
+function reloj() {
+  var ms = BODA - new Date();
+  if (ms < 0) ms = 0;
+  var s = Math.floor(ms / 1000);
+  document.getElementById('cd-d').textContent = Math.floor(s / 86400);
+  document.getElementById('cd-h').textContent = Math.floor(s % 86400 / 3600);
+  document.getElementById('cd-m').textContent = Math.floor(s % 3600 / 60);
+  document.getElementById('cd-s').textContent = s % 60;
+}
+
+document.getElementById('list').addEventListener('change', function (e) {
+  var id = e.target.getAttribute('data-id'); if (!id) return;
+  if (e.target.checked) estado.hechas[id] = true; else delete estado.hechas[id];
+  guardar(); pintar();
+});
+document.getElementById('list').addEventListener('click', function (e) {
+  var id = e.target.getAttribute('data-del'); if (!id) return;
+  estado.extra = estado.extra.filter(function (t) { return t.id !== id; });
+  delete estado.hechas[id]; guardar(); pintar();
+});
+document.getElementById('filters').addEventListener('click', function (e) {
+  var f = e.target.getAttribute('data-f'); if (!f) return;
+  filtro = f;
+  Array.prototype.forEach.call(this.children, function (b) { b.className = b.getAttribute('data-f') === f ? 'on' : ''; });
+  pintar();
+});
+document.getElementById('n-add').addEventListener('click', function () {
+  var t = document.getElementById('n-title').value.trim(); if (!t) return;
+  estado.extra.push({ id: 'x' + Date.now(), t: t, d: document.getElementById('n-detail').value.trim(),
+    f: document.getElementById('n-date').value, c: document.getElementById('n-cat').value.trim(), propia: true });
+  ['n-title', 'n-detail', 'n-date', 'n-cat'].forEach(function (i) { document.getElementById(i).value = ''; });
+  guardar(); pintar();
+});
+document.getElementById('exp').addEventListener('click', function () {
+  var txt = JSON.stringify(estado);
+  if (navigator.clipboard) navigator.clipboard.writeText(txt).then(function () { alert('Avance copiado. Pégalo en el otro dispositivo.'); }, function () { prompt('Copia este texto:', txt); });
+  else prompt('Copia este texto:', txt);
+});
+document.getElementById('imp').addEventListener('click', function () {
+  var txt = prompt('Pega aquí el avance copiado:'); if (!txt) return;
+  try { var o = JSON.parse(txt); if (!o || typeof o.hechas !== 'object') throw 0;
+    estado = { hechas: o.hechas || {}, extra: o.extra || [], borradas: o.borradas || {} }; guardar(); pintar();
+  } catch (e) { alert('Ese texto no es un avance válido.'); }
+});
+
+document.getElementById('day').innerHTML = DIA.map(function (r) { return '<tr><td>' + r[0] + '</td><td>' + esc(r[1]) + '</td></tr>'; }).join('');
+document.getElementById('prov').innerHTML = PROV.map(function (r) { return '<tr><td>' + esc(r[0]) + '</td><td>' + esc(r[1]) + '</td></tr>'; }).join('');
+pintar(); reloj(); setInterval(reloj, 1000);
+</script>
+</body>
+</html>
